@@ -4,6 +4,7 @@
 // 2. Disables Webpack-specific features that Mocha doesn't understand.
 // 3. Requires jsdom so we can test via an in-memory DOM in Node
 // 4. Sets up global vars that mimic a browser.
+// 5. Configure Enzyme for React.
 
 /*eslint-disable no-var*/
 
@@ -30,12 +31,12 @@ require.extensions['.jpg'] = function () {return null;};
 
 // Configure JSDOM and set global variables
 // to simulate a browser environment for tests.
-var jsdom = require('jsdom').jsdom;
+var { JSDOM } = require('jsdom');
 
 var exposedProperties = ['window', 'navigator', 'document'];
 
-global.document = jsdom('');
-global.window = document.defaultView;
+const { window } = new JSDOM(`...`);
+const { document } = (new JSDOM(`...`)).window;
 Object.keys(document.defaultView).forEach((property) => {
   if (typeof global[property] === 'undefined') {
     exposedProperties.push(property);
@@ -48,3 +49,9 @@ global.navigator = {
 };
 
 documentRef = document;  //eslint-disable-line no-undef
+
+// Configure Enzyme for React 16
+var Enzyme = require('enzyme');
+var Adapter = require('enzyme-adapter-react-16');
+
+Enzyme.configure({ adapter: new Adapter() });
